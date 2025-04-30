@@ -1,24 +1,13 @@
-
-# Re-run after code execution state was reset
-from pathlib import Path
-
-# Define paths
-ui_router_path = Path("/mnt/data/ui_router.py")
-index_html_path = Path("/mnt/data/index.html")
-
-
 from fastapi import APIRouter, Request, Form
-from fastapi.responses import RedirectResponse
 from fastapi.templating import Jinja2Templates
-from app.services.memory_service import update_memory
+from fastapi.responses import RedirectResponse
+from app.services.memory_service import update_memory, memory
 from app.serpapi_service import search_influencers
 from app.services.gmail_service import send_emails
-from app.email_log_service import init_db, was_email_sent
 from app.services.ollama_service import parse_user_prompt
 
 templates = Jinja2Templates(directory="app/templates")
 router = APIRouter()
-
 toggle_state = {"active": True}
 
 @router.get("/")
@@ -31,23 +20,31 @@ def index(request: Request):
     })
 
 @router.post("/run")
-def run_agent(request: Request, prompt: str = Form(...)):
+def run_agent(request: Request,
+              category: str = Form(...),
+              search_count: int = Form(...),
+              send_count: int = Form(...),
+              subject: str = Form(...),
+              message: str = Form(...)):
+
     if not toggle_state["active"]:
         return templates.TemplateResponse("index.html", {
             "request": request,
-            "toggle": toggle_state["active"],
+            "toggle": False,
             "results": [],
             "message": "Agent is OFF"
         })
 
+    prompt = f"search for {category} influencers with email as gmail give {search_count} results subject {subject} message {message}"
     parsed = parse_user_prompt(prompt)
     update_memory(parsed["query"], parsed["subject"], parsed["message"])
     emails = search_influencers(parsed["query"], parsed["num_results"])
+    memory["emails"] = emails[:send_count]
     results = send_emails()
 
     return templates.TemplateResponse("index.html", {
         "request": request,
-        "toggle": toggle_state["active"],
+        "toggle": True,
         "results": results,
         "message": f"Agent completed. {len(results)} entries."
     })
