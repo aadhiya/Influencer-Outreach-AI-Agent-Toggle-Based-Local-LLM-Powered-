@@ -22,10 +22,14 @@ def index(request: Request):
 @router.post("/run")
 def run_agent(request: Request,
               category: str = Form(...),
+              custom_category: str = Form(""),
               search_count: int = Form(...),
               send_count: int = Form(...),
               subject: str = Form(...),
               message: str = Form(...)):
+
+    if category == "other" and custom_category.strip():
+        category = custom_category.strip()
 
     if not toggle_state["active"]:
         return templates.TemplateResponse("index.html", {

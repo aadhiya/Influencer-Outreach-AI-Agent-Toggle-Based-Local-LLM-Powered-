@@ -24,9 +24,27 @@
           <option value="finance">Finance</option>
           <option value="pets">Pet Influencers</option>
           <option value="motivation">Motivational</option>
+          <option value="other">Other (custom)</option>
+
         </select>
       </div>
-
+      <div id="custom-category-field" class="hidden mt-2">
+        <label class="block font-semibold">Custom Influencer Type</label>
+        <input type="text" name="custom_category" id="custom_category" class="w-full border p-2 rounded" placeholder="e.g., book reviewers">
+      </div>
+      
+      <script>
+        const dropdown = document.querySelector('select[name="category"]');
+        const customField = document.getElementById('custom-category-field');
+      
+        dropdown.addEventListener('change', function() {
+          if (this.value === 'other') {
+            customField.classList.remove('hidden');
+          } else {
+            customField.classList.add('hidden');
+          }
+        });
+      </script>
       <div>
         <label class="block font-semibold">How many influencers to search?</label>
         <input type="number" name="search_count" class="w-full border p-2 rounded" value="10" min="1">
