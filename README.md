@@ -109,7 +109,7 @@ Visit Swagger UI:
 
     Use POST /process/ endpoint with a prompt.
 
-📄 LICENSE
+## 📄 LICENSE
 Copyright (c) 2025 Aadhiya
 
 All rights reserved.
