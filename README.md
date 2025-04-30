@@ -41,6 +41,19 @@ Each run is logged in memory (with upgrades available for DB-based logging, anal
 - Complies with Google's security/auth rules (OAuth 2.0)
 
 ---
+---
+
+## 📜 License
+
+**Copyright (c) 2025 Jon Capriola**
+
+All rights reserved.
+
+This software and associated files (the “Software”) may **not be used, copied, modified, merged, published, distributed, sublicensed, or sold** in any form or for any purpose without the **express written permission of the author**.
+
+Any unauthorized use shall be considered a violation of applicable intellectual property laws.
+
+To request permission, please contact the author directly.
 
 ## 🔑 How to Get API Keys
 
@@ -106,19 +119,6 @@ uvicorn app.main:app --reload
 
 Visit Swagger UI:
  http://127.0.0.1:8000/docs
-
-    Use POST /process/ endpoint with a prompt.
-
-## 📄 LICENSE
-Copyright (c) 2025 Aadhiya
-
-All rights reserved.
-
-This software and associated files (the “Software”) may not be used, copied, modified, merged, published, distributed, sublicensed, or sold in any form or for any purpose without the express written permission of the author.
-
-Any unauthorized use of this Software or any portion thereof shall be considered a violation of applicable intellectual property laws.
-
-To request permission, please contact the author directly.
-
+ Use POST /process/ endpoint with a prompt.
 
 
