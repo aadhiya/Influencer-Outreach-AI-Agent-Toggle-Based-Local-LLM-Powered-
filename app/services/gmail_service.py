@@ -6,6 +6,7 @@ from google.oauth2.credentials import Credentials
 from googleapiclient.discovery import build
 from app.config import GMAIL_CLIENT_ID, GMAIL_CLIENT_SECRET, GMAIL_REFRESH_TOKEN
 from app.services.memory_service import get_memory
+from app.email_log_service import was_email_sent, log_email_sent
 
 def create_gmail_service():
     creds = Credentials(
@@ -21,10 +22,25 @@ def create_gmail_service():
 def send_emails():
     memory = get_memory()
     service = create_gmail_service()
+    sent_results = []
 
     for email in memory["emails"]:
-        message = create_message(email, memory["subject"], memory["message"])
-        send_message(service, "me", message)
+        if was_email_sent(email):
+            print(f"⚠️ Skipping {email} — already emailed.")
+            sent_results.append({"email": email, "status": "already sent"})
+            continue
+
+        msg = create_message(email, memory["subject"], memory["message"])
+        result = send_message(service, "me", msg)
+
+        if result:
+            log_email_sent(email, memory["subject"])
+            sent_results.append({"email": email, "status": "sent"})
+        else:
+            sent_results.append({"email": email, "status": "failed"})
+
+    return sent_results
+
 
 def create_message(to, subject, body_html):
     message = MIMEText(body_html, 'html')

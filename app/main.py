@@ -3,6 +3,8 @@ from app.services.memory_service import update_memory, get_memory
 from app.serpapi_service import search_influencers
 from app.services.gmail_service import send_emails
 from app.services.ollama_service import parse_user_prompt
+from app.email_log_service import init_db
+init_db()
 
 app = FastAPI()
 
@@ -28,11 +30,10 @@ def process_user_prompt(prompt: str):
         return {"status": "No influencers found with Gmail emails."}
 
     # Step 5: Send emails
-    send_emails()
-
+    results = send_emails()
     return {
-        "status": f"Emails sent to {len(found_emails)} influencers.",
-        "emails": found_emails
+        "status": f"Email run complete. {len(results)} total entries.",
+        "results": results
     }
 
 @app.get("/memory/")
