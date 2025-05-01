@@ -1,37 +1,44 @@
+
 import sqlite3
 from datetime import datetime
+import os
 
-DB_FILE = "email_log.db"
+DB_PATH = "email_log.db"
 
-# Create the table if it doesn't exist
 def init_db():
-    conn = sqlite3.connect(DB_FILE)
-    c = conn.cursor()
-    c.execute('''
-        CREATE TABLE IF NOT EXISTS email_log (
+    conn = sqlite3.connect(DB_PATH)
+    cursor = conn.cursor()
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS sent_emails (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
-            email TEXT NOT NULL,
-            subject TEXT,
-            sent_at TEXT
+            email TEXT UNIQUE,
+            status TEXT,
+            timestamp TEXT
         )
     ''')
     conn.commit()
     conn.close()
 
-# Check if email was already sent
+def log_email(email, status, toggles):
+    if not toggles.get("logging_enabled"):
+        return
+    init_db()
+    conn = sqlite3.connect(DB_PATH)
+    cursor = conn.cursor()
+    try:
+        cursor.execute("INSERT OR IGNORE INTO sent_emails (email, status, timestamp) VALUES (?, ?, ?)",
+                       (email, status, datetime.now().isoformat()))
+        conn.commit()
+    except Exception as e:
+        print("[LOG ERROR]", e)
+    finally:
+        conn.close()
+
 def was_email_sent(email):
-    conn = sqlite3.connect(DB_FILE)
-    c = conn.cursor()
-    c.execute("SELECT * FROM email_log WHERE email = ?", (email,))
-    result = c.fetchone()
+    init_db()
+    conn = sqlite3.connect(DB_PATH)
+    cursor = conn.cursor()
+    cursor.execute("SELECT 1 FROM sent_emails WHERE email = ?", (email,))
+    result = cursor.fetchone()
     conn.close()
     return result is not None
-
-# Log new email send
-def log_email_sent(email, subject):
-    conn = sqlite3.connect(DB_FILE)
-    c = conn.cursor()
-    c.execute("INSERT INTO email_log (email, subject, sent_at) VALUES (?, ?, ?)",
-              (email, subject, datetime.utcnow().isoformat()))
-    conn.commit()
-    conn.close()

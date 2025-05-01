@@ -1,8 +1,11 @@
-# app/services/serpapi_service.py
-
 import requests
+import re
 from app.config import SERPAPI_KEY
 from app.services.memory_service import add_email
+
+def extract_emails(text):
+    # Extract all emails (any domain)
+    return re.findall(r"[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+", text)
 
 def search_influencers(query, num_results=10):
     url = "https://serpapi.com/search.json"
@@ -12,27 +15,28 @@ def search_influencers(query, num_results=10):
         "num": num_results,
         "api_key": SERPAPI_KEY
     }
+
     response = requests.get(url, params=params)
     data = response.json()
 
+    print("[SERPAPI RAW RESULTS]", data)
+
     results = []
+
     if "organic_results" in data:
         for item in data["organic_results"]:
             snippet = item.get("snippet", "")
             link = item.get("link", "")
-            if "gmail.com" in snippet.lower() or "gmail.com" in link.lower():
-                results.append(extract_email(snippet))
 
-    # Save in memory
+            # Search both snippet and link text for emails
+            found = extract_emails(snippet) + extract_emails(link)
+            for email in found:
+                if email and email not in results:
+                    results.append(email)
+
+    print("[SERPAPI EXTRACTED EMAILS]", results)
+
     for email in results:
-        if email:
-            add_email(email)
+        add_email(email)
 
     return results
-
-def extract_email(text):
-    import re
-    match = re.search(r"[a-zA-Z0-9_.+-]+@gmail\.com", text)
-    if match:
-        return match.group()
-    return None

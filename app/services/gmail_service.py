@@ -6,7 +6,8 @@ from google.oauth2.credentials import Credentials
 from googleapiclient.discovery import build
 from app.config import GMAIL_CLIENT_ID, GMAIL_CLIENT_SECRET, GMAIL_REFRESH_TOKEN
 from app.services.memory_service import get_memory
-from app.email_log_service import was_email_sent, log_email_sent
+from app.email_log_service import was_email_sent, log_email  
+
 
 def create_gmail_service():
     creds = Credentials(
