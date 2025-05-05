@@ -46,7 +46,40 @@ investor_outreach_agent/
 - Download outreach results
 
 ---
+## 🚀 How to Run and Test Locally
 
+    Clone the repository:
+
+git clone https://github.com/YOUR_USERNAME/Influencer-Outreach-AI-Agent-Toggle-Based-Local-LLM-Powered-.git
+cd Influencer-Outreach-AI-Agent-Toggle-Based-Local-LLM-Powered-
+
+Install dependencies:
+
+pip install -r requirements.txt
+
+Set environment variables:
+Create a .env file in the root with the following:
+
+SERPAPI_KEY=your_serpapi_key
+GMAIL_CLIENT_ID=your_gmail_client_id
+GMAIL_CLIENT_SECRET=your_gmail_client_secret
+GMAIL_REFRESH_TOKEN=your_gmail_refresh_token
+
+Run the Streamlit UI:
+
+streamlit run investor_outreach_agent/email_scraper_ui.py
+
+Test:
+
+    Upload a CSV file with a column name containing investor names.
+
+    Customize the message.
+
+    Run the agent to fetch emails and send outreach messages.
+
+    Download the result log.
+
+ ---
 ## 📸 Screenshots
 
 _Add screenshots below once UI is finalized._
