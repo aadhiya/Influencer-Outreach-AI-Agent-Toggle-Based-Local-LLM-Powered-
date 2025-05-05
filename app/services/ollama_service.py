@@ -28,3 +28,21 @@ def parse_user_prompt(prompt):
         "message": message,
         "num_results": num_results
     }
+import requests
+
+def personalize_message(name, base_message):
+    try:
+        ollama_payload = {
+            "model": "llama3",  # or any model you have installed locally
+            "prompt": f"Personalize the following outreach message for an investor named {name}:\n\n{base_message}",
+            "stream": False
+        }
+
+        response = requests.post("http://localhost:11434/api/generate", json=ollama_payload)
+        response.raise_for_status()
+        data = response.json()
+        return data.get("response", base_message)
+
+    except Exception as e:
+        print(f"[Ollama Error] Falling back to default message for {name}: {e}")
+        return base_message
